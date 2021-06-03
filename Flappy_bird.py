@@ -81,13 +81,52 @@ class Bird:
         rectangle = rotated_image.get_rect(center=image_center_position)
         screen.blit(rotated_image,rectangle.topleft)
         
-        def get_mask(self):
-            pygame.mask.from_surface(self.image)
+    def get_mask(self):
+        pygame.mask.from_surface(self.image)
     
-    pass
+    
 
 class Pipe:
-    pass
+    DISTANCE = 200
+    SPEED = 5
+    
+    def __init__(self,x):
+        self.x = x
+        self.height = 0
+        self.pos_top = 0
+        self.pos_base = 0
+        self.TOP_PIPE = pygame.transform.flip(IMAGE_PIPE, False,True)
+        self.BASE_PIPE = IMAGE_PIPE
+        self.surpassed = False
+        self.set_height()
+        
+    def set_height(self):
+        self.height = random.randrange(50,450)
+        self.pos_top = self.height - self.TOP_PIPE.get_height()
+        self.pos_base = self.height + self.DISTANCE
+    
+    def move(self):
+        self.x -= self.SPEED
 
+    def draw(self, screen):
+        screen.blit(self.TOP_PIPE,(self.x, self.pos_top))
+        screen.blit(self.BASE_PIPE,(self.x, self.pos_base))
+
+    def collide(self,bird):
+        bird_mask = bird.get_mask()
+        top_mask = pygame.mask.from_surface(self.TOP_PIPE)
+        base_mask = pygame.mask.from_surface(self.BASE_PIPE)
+        
+        distane_top = (self.x - bird.x, self.pos_top - round(bird.x))
+        distane_base = (self.x - bird.x, self.pos_base - round(bird.y))
+        
+        top_point = bird_mask.overlap(top_mask,distane_top)
+        base_point = bird_mask.overlap(base_mask,distane_base)
+        
+        if base_point or top_point:
+            return True
+        else:
+            return False
+        
 class Base:
     pass

@@ -150,3 +150,18 @@ class Base:
     def draw(self,screen):
         screen.blit(self.IMAGE,(self.x1, self.y))
         screen.blit(self.IMAGE,(self.x2, self.y))
+        
+
+def draw_screen(screen,birds,pipes,base,points):
+    screen.blit(IMAGE_BACKGROUND, (0,0))
+    
+    for bird in birds:
+        bird.draw(screen)
+        
+    for pipe in pipes:
+        pipe.draw(screen)
+        
+    text = POINT_SOURCE.render(f*"Pontuação: {pontos}", 1, (255,255,255))
+    screen.blit(text,(SCREEN_WIDTH - 10 - text.get_width(),10))
+    base.draw(screen)
+    pygame.display.updade()

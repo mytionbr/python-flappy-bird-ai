@@ -1,23 +1,21 @@
-from math import pi
-from typing_extensions import runtime
 import pygame
 import os
 import random
 
 SCREEN_WIDTH = 500
-SCREEN_HEIGHT = 800
+SCREEN_HEIGHT = 550
 
-IMAGE_PIPE = pygame.tranform.scale2x(pygame.image.load(os.path.join('imgs','pipi.png')))
-IMAGE_BASE = pygame.tranform.scale2x(pygame.image.load(os.path.join('imgs','base.png')))
-IMAGE_BACKGROUND =IMAGE_BASE = pygame.tranform.scale2x(pygame.image.load(os.path.join('imgs','bg.png')))
+IMAGE_PIPE = (pygame.image.load(os.path.join('imgs','pipe.png')))
+IMAGE_BASE = (pygame.image.load(os.path.join('imgs','base.png')))
+IMAGE_BACKGROUND = pygame.transform.scale(pygame.image.load(os.path.join('imgs','bg.png')),(500,550))
 IMAGE_BIRD = [
-    pygame.tranform.scale2x(pygame.image.load(os.path.join('imgs','bird1.png'))),
-    pygame.tranform.scale2x(pygame.image.load(os.path.join('imgs','bird2.png'))),
-    pygame.tranform.scale2x(pygame.image.load(os.path.join('imgs','bird3.png')))
+    (pygame.image.load(os.path.join('imgs','bird1.png'))),
+    (pygame.image.load(os.path.join('imgs','bird2.png'))),
+    (pygame.image.load(os.path.join('imgs','bird3.png')))
 ]
 
 pygame.font.init()
-POINT_SOURCE = pygame.font.SysFont('arial',50)
+POINT_SOURCE = pygame.font.SysFont('arial',30)
 
 class Bird:
     IMGS = IMAGE_BIRD
@@ -78,18 +76,18 @@ class Bird:
             self.image = self.IMGS[1]
             self.image_count = self.ANIMATION_TIME * 2
             
-        rotated_image = pygame.trasform.rotate(self.image, self.angle)
+        rotated_image = pygame.transform.rotate(self.image, self.angle)
         image_center_position = self.image.get_rect(topleft=(self.x,self.y)).center
         rectangle = rotated_image.get_rect(center=image_center_position)
         screen.blit(rotated_image,rectangle.topleft)
         
     def get_mask(self):
-        pygame.mask.from_surface(self.image)
+       return pygame.mask.from_surface(self.image)
     
     
 
 class Pipe:
-    DISTANCE = 200
+    DISTANCE = 170
     SPEED = 5
     
     def __init__(self,x):
@@ -103,7 +101,7 @@ class Pipe:
         self.set_height()
         
     def set_height(self):
-        self.height = random.randrange(50,450)
+        self.height = random.randrange(31,281)
         self.pos_top = self.height - self.TOP_PIPE.get_height()
         self.pos_base = self.height + self.DISTANCE
     
@@ -119,7 +117,7 @@ class Pipe:
         top_mask = pygame.mask.from_surface(self.TOP_PIPE)
         base_mask = pygame.mask.from_surface(self.BASE_PIPE)
         
-        distane_top = (self.x - bird.x, self.pos_top - round(bird.x))
+        distane_top = (self.x - bird.x, self.pos_top - round(bird.y))
         distane_base = (self.x - bird.x, self.pos_base - round(bird.y))
         
         top_point = bird_mask.overlap(top_mask,distane_top)
@@ -166,19 +164,19 @@ def draw_screen(screen,birds,pipes,base,points):
     text = POINT_SOURCE.render(f"Pontuação: {points}", 1, (255,255,255))
     screen.blit(text,(SCREEN_WIDTH - 10 - text.get_width(),10))
     base.draw(screen)
-    pygame.display.updade()
+    pygame.display.update()
     
 
 def main():
-    birds = [Bird(230,350)]
+    birds = [Bird(130,350)]
     base = Base(730)
     pipes = [Pipe(700)]
-    screen = pygame.display.set_node((SCREEN_WIDTH,SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     points = 0
     clock  = pygame.time.Clock()
     
     running = True
-    while runtime:
+    while running:
         clock.tick(30)
         
         for event in pygame.event.get():
@@ -199,23 +197,25 @@ def main():
         remove_pipe = []
         
         for pipe in pipes:
-            for i, birds in enumerate(bird):
+            for i, bird in enumerate(birds):
                 if pipe.collide(bird):
                     birds.pop(i)
+                                 
                 if not pipe.surpassed and bird.x > pipe.x:
-                    pipe.surpassed = True
                     add_pipe = True
+                    pipe.surpassed = True
+
             pipe.move()
             if pipe.x +  pipe.TOP_PIPE.get_width() < 0:
                 remove_pipe.append(pipe)
                 
         if add_pipe:
             points += 1
-            pipes.append(Pipe(600))
+            pipes.append(Pipe(500))
         for pipe in  remove_pipe:
             pipes.remove(pipe)
             
-        for i,birds in enumerate(birds):
+        for i,bird in enumerate(birds):
             if bird.y + bird.image.get_height() > base.y or bird.y <0:
                 birds.pop(i)
                 

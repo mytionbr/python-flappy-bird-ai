@@ -1,3 +1,5 @@
+from math import pi
+from typing_extensions import runtime
 import pygame
 import os
 import random
@@ -161,7 +163,64 @@ def draw_screen(screen,birds,pipes,base,points):
     for pipe in pipes:
         pipe.draw(screen)
         
-    text = POINT_SOURCE.render(f*"Pontuação: {pontos}", 1, (255,255,255))
+    text = POINT_SOURCE.render(f"Pontuação: {points}", 1, (255,255,255))
     screen.blit(text,(SCREEN_WIDTH - 10 - text.get_width(),10))
     base.draw(screen)
     pygame.display.updade()
+    
+
+def main():
+    birds = [Bird(230,350)]
+    base = Base(730)
+    pipes = [Pipe(700)]
+    screen = pygame.display.set_node((SCREEN_WIDTH,SCREEN_HEIGHT))
+    points = 0
+    clock  = pygame.time.Clock()
+    
+    running = True
+    while runtime:
+        clock.tick(30)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    for bird in birds:
+                        bird.jump()
+                        
+        for bird in birds:
+            bird.move()
+        base.move()
+        
+        add_pipe = False
+        remove_pipe = []
+        
+        for pipe in pipes:
+            for i, birds in enumerate(bird):
+                if pipe.collide(bird):
+                    birds.pop(i)
+                if not pipe.surpassed and bird.x > pipe.x:
+                    pipe.surpassed = True
+                    add_pipe = True
+            pipe.move()
+            if pipe.x +  pipe.TOP_PIPE.get_width() < 0:
+                remove_pipe.append(pipe)
+                
+        if add_pipe:
+            points += 1
+            pipes.append(Pipe(600))
+        for pipe in  remove_pipe:
+            pipes.remove(pipe)
+            
+        for i,birds in enumerate(birds):
+            if bird.y + bird.image.get_height() > base.y or bird.y <0:
+                birds.pop(i)
+                
+        
+        draw_screen(screen,birds,pipes,base,points)
+
+if __name__ == '__main__':
+    main()

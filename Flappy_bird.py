@@ -6,7 +6,7 @@ SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 550
 
 IMAGE_PIPE = (pygame.image.load(os.path.join('imgs','pipe.png')))
-IMAGE_BASE = (pygame.image.load(os.path.join('imgs','base.png')))
+IMAGE_BASE = pygame.transform.scale(pygame.image.load(os.path.join('imgs','base.png')),(500,50))
 IMAGE_BACKGROUND = pygame.transform.scale(pygame.image.load(os.path.join('imgs','bg.png')),(500,550))
 IMAGE_BIRD = [
     (pygame.image.load(os.path.join('imgs','bird1.png'))),
@@ -143,9 +143,9 @@ class Base:
         self.x2 -= self.SPEED
         
         if self.x1 + self.WIDTH < 0:
-            self.x1 = self.x1 + self.WIDTH
+            self.x1 = self.x2 + self.WIDTH
         if self.x2 + self.WIDTH < 0:
-            self.x2 = self.x2 + self.WIDTH
+            self.x2 = self.x1 + self.WIDTH
     
     def draw(self,screen):
         screen.blit(self.IMAGE,(self.x1, self.y))
@@ -169,7 +169,7 @@ def draw_screen(screen,birds,pipes,base,points):
 
 def main():
     birds = [Bird(130,350)]
-    base = Base(730)
+    base = Base(500)
     pipes = [Pipe(700)]
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     points = 0
